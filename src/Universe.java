@@ -27,7 +27,7 @@ public class Universe extends JComponent implements Runnable{
 	static int h = height/size, w = width/size;
 	static double itr = 1;
 	
-	static int con = 5;
+	static int con = 7;
 	
 	public static void main(String args[]) {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,15 +103,33 @@ public class Universe extends JComponent implements Runnable{
                     			{1,0,1,1,0},
                     			{0,1,1,0,0},
                     			{1,1,1,0,0},
-                    			{1,0,0,0,0}};
+                    			{1,0,0,0,0},
+                    			{0,0,0,0,0}};
 			for(int i=0;i<ladder.length;i++) {
 				for(int j=0;j<ladder[0].length;j++) {
-					endState[h/2+i][w/2+j] = ladder[i][j];
+					for(int k=0;k<h/10;k++) {
+						endState[10*k+i][j] = ladder[i][j];
+					}
 				}
 			}
 			break;
 		}
-		
+		case 6:{ // (i+j)%2
+			for(int i=0;i<h;i++) {
+				for(int j=0;j<w;j++) {
+					endState[i][j] = (i+j)%2;
+				}
+			}
+			break;
+		}
+		case 7:{ // (i*j)%2
+			for(int i=0;i<h;i++) {
+				for(int j=0;j<w;j++) {
+					endState[i][j] = (i+j)%2;
+				}
+			}
+			break;
+		}
 		default:{
 			for(int i=0;i<h;i++) {
 				for(int j=0;j<w;j++) {
@@ -170,9 +188,15 @@ public class Universe extends JComponent implements Runnable{
 				if(i+1 < h && j-1 >= 0) cnt+= endState[i+1][j-1];
 				if(i+1 < h && j+1 < w) cnt+= endState[i+1][j+1];
 				if(endState[i][j]==1) {// Live cell
-					if(cnt<2) next[i][j] = 0;// under population death
+					if(cnt<2) {
+						if(con==5) next[i][j] = 1;// under population death
+						else next[i][j] = 0;// under population death
+					}
 					else if (cnt>=2&&cnt<=3) next[i][j]=1;// stay alive
-					else if (cnt>3) next[i][j]=0;// over population death
+					else if (cnt>3) {
+						if(con==5) next[i][j]=1;// over population death
+						else next[i][j]=0;// over population death
+					}
 				}
 				else {// cell dead
 					if(cnt==3) next[i][j]=1;// alive by reproduction
@@ -194,7 +218,7 @@ public class Universe extends JComponent implements Runnable{
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(20);
 			repaint();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
