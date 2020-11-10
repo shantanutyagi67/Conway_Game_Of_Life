@@ -10,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -23,20 +24,27 @@ public class rule30 extends JComponent implements Runnable{
 	 */
 	private static final long serialVersionUID = 1L;
 	static JFrame frame = new JFrame("%window name%");
-	static int size = 1;
+	static int size = 2;
 	double spacing = 0;
 	static int width = 1800, height = 900;
 	static int endState[][] = new int [height/size][width/size];
 	static int h = height/size, w = width/size;
 	static int itr = 0;
+	static int rule = 30;
+	static String binary = ""; 
 	
 	public static void main(String args[]) {
+		System.out.print("Enter Rule No.: ");
+		Scanner sc = new Scanner(System.in);
+		rule = sc.nextInt();
+		binary = Integer.toBinaryString(rule);
+		binary = String.format("%08d", Integer.parseInt(binary));
+		System.out.println("In Binary: "+binary);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(0,0,width+6+6+6,height+29+29+3);
 		frame.getContentPane().add(new rule30());
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setVisible(true);
-		
 //		for(int i=0;i<w;i++) {
 //			int tmp = new Random().nextInt(100);
 //			if (tmp<50)
@@ -80,19 +88,21 @@ public class rule30 extends JComponent implements Runnable{
 		g2D.drawString("Alive: "+bd.doubleValue()+"%",1200,65);
 		
 		int[] next = new int [w];
-		for(int j=0;j<w;j++) {
-			next[j] = endState[itr][j];
-		}
+		//for(int j=0;j<w;j++) {
+		//	next[j] = endState[itr][j];
+		//}
 		int i = itr;
+		next[0] = binary.charAt(7);
+		next[w-1] = next[0];
 		for(int j=0;j<w-2;j++) {
-			if(endState[i][j]==1&&endState[i][j+1]==1&&endState[i][j+2]==1) next[j+1]=0;
-			else if(endState[i][j]==1&&endState[i][j+1]==1&&endState[i][j+2]==0) next[j+1]=0;
-			else if(endState[i][j]==1&&endState[i][j+1]==0&&endState[i][j+2]==1) next[j+1]=0;
-			else if(endState[i][j]==1&&endState[i][j+1]==0&&endState[i][j+2]==0) next[j+1]=1;
-			else if(endState[i][j]==0&&endState[i][j+1]==1&&endState[i][j+2]==1) next[j+1]=1;
-			else if(endState[i][j]==0&&endState[i][j+1]==1&&endState[i][j+2]==0) next[j+1]=1;
-			else if(endState[i][j]==0&&endState[i][j+1]==0&&endState[i][j+2]==1) next[j+1]=1;
-			else if(endState[i][j]==0&&endState[i][j+1]==0&&endState[i][j+2]==0) next[j+1]=0;
+			if(endState[i][j]==1&&endState[i][j+1]==1&&endState[i][j+2]==1) next[j+1]=binary.charAt(0)-'0';
+			else if(endState[i][j]==1&&endState[i][j+1]==1&&endState[i][j+2]==0) next[j+1]=binary.charAt(1)-'0';
+			else if(endState[i][j]==1&&endState[i][j+1]==0&&endState[i][j+2]==1) next[j+1]=binary.charAt(2)-'0';
+			else if(endState[i][j]==1&&endState[i][j+1]==0&&endState[i][j+2]==0) next[j+1]=binary.charAt(3)-'0';
+			else if(endState[i][j]==0&&endState[i][j+1]==1&&endState[i][j+2]==1) next[j+1]=binary.charAt(4)-'0';
+			else if(endState[i][j]==0&&endState[i][j+1]==1&&endState[i][j+2]==0) next[j+1]=binary.charAt(5)-'0';
+			else if(endState[i][j]==0&&endState[i][j+1]==0&&endState[i][j+2]==1) next[j+1]=binary.charAt(6)-'0';
+			else if(endState[i][j]==0&&endState[i][j+1]==0&&endState[i][j+2]==0) next[j+1]=binary.charAt(7)-'0';
 		}
 		itr++;
 		if(itr>=900) {
