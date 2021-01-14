@@ -17,13 +17,13 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 
-public class rule30 extends JComponent implements Runnable{
+public class rules extends JComponent implements Runnable{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	static JFrame frame = new JFrame("%window name%");
+	static JFrame frame = new JFrame("Game Of Life");
 	static int size = 2;
 	double spacing = 0;
 	static int width = 1800, height = 900;
@@ -42,7 +42,7 @@ public class rule30 extends JComponent implements Runnable{
 		System.out.println("In Binary: "+binary);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(0,0,width+6+6+6,height+29+29+3);
-		frame.getContentPane().add(new rule30());
+		frame.getContentPane().add(new rules());
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setVisible(true);
 //		for(int i=0;i<w;i++) {
@@ -51,7 +51,6 @@ public class rule30 extends JComponent implements Runnable{
 //				endState[0][i] = 1;
 //			else
 //				endState[0][i] = 0;
-//			
 //		}
 		endState[0][w/2] = 1;
 }

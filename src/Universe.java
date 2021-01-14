@@ -19,7 +19,7 @@ public class Universe extends JComponent implements Runnable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	static JFrame frame = new JFrame("%window name%");
+	static JFrame frame = new JFrame("Universe Simulation");
 	static int size = 5;
 	double spacing = 0.2;
 	static int width = 1600, height = 900;
