@@ -3,6 +3,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +16,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+
 
 
 public class Universe extends JComponent implements Runnable{
@@ -26,8 +32,19 @@ public class Universe extends JComponent implements Runnable{
 	static int endState[][] = new int [height/size][width/size];
 	static int h = height/size, w = width/size;
 	static double itr = 1;
+	public double mx,my;
+	public int pause = 0;
 	
-	static int con = 7;
+	static int con = 100;
+	
+	public Universe(){
+		Move move = new Move();
+		this.addMouseMotionListener(move);
+		Click click = new Click();
+		this.addMouseListener(click);
+		this.addKeyListener(move);
+		this.setFocusable(true);
+	}
 	
 	public static void main(String args[]) {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,6 +52,8 @@ public class Universe extends JComponent implements Runnable{
 		frame.getContentPane().add(new Universe());
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setVisible(true);
+		
+		
 		
 		for(int i=0;i<h;i++) {
 			for(int j=0;j<w;j++) {
@@ -151,7 +170,7 @@ public class Universe extends JComponent implements Runnable{
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
     	rh.put(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
     	g2D.setRenderingHints(rh);
-    	double sum = 0;
+		double sum = 0;
 		for(int i=0;i<h;i++) {
 			for(int j=0;j<w;j++) {
 				if(endState[i][j]==1) {
@@ -163,7 +182,7 @@ public class Universe extends JComponent implements Runnable{
 				g2D.fill(new Rectangle2D.Double(spacing+j*size, spacing+(i+1)*size, size-2*spacing, size-2*spacing));
 			}
 		}
-		
+	
 		g2D.setColor(Color.RED);
 		g2D.setFont(new Font("Monospaced", Font.BOLD, 30));
 		if(itr>=1000)
@@ -171,10 +190,10 @@ public class Universe extends JComponent implements Runnable{
 		else
 			g2D.drawString("Generation: "+(int)itr,1200,40);
 		BigDecimal bd = new BigDecimal(Double.toString(sum/(w*h)*100.00));
-	    bd = bd.setScale(2, RoundingMode.HALF_UP);
+		bd = bd.setScale(2, RoundingMode.HALF_UP);
 		g2D.drawString("Alive: "+bd.doubleValue()+"%",1200,65);
+		if (pause!=0) {
 		itr++;
-		
 		int[][] next = new int [height/size][width/size];
 		for(int i=0;i<h;i++) {
 			for(int j=0;j<w;j++) {
@@ -210,10 +229,89 @@ public class Universe extends JComponent implements Runnable{
 				endState[i][j] = next[i][j];
 			}
 		}
+    	}
 		
 		run();
 		//repaint();
 	}
+	
+	
+	public int inBoxX() {
+		for(int i=0;i<h;i++) {
+			for(int j=0;j<w;j++) {
+				if(mx >= spacing+j*size+7 && mx <= (j+1)*size+2)
+					return j;
+			}
+		}
+		return -1;
+	}
+	
+	public int inBoxY() {
+		for(int i=0;i<h;i++) {
+			for(int j=0;j<w;j++) {
+				if(my >= spacing+(i+1)*size+26+5 && my <= 26+5+(i+2)*size-spacing-1)
+					return i;
+			}
+		}
+		return -1;
+	}
+	
+	
+	public class Move implements MouseMotionListener, KeyListener{
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			
+		}
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			mx = e.getX();
+			my = e.getY();
+		}
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode()==KeyEvent.VK_SPACE){
+				pause += 1;
+				pause%=2;
+			}
+			
+		}
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	
+	public class Click implements MouseListener{
+		@Override
+		public void mouseClicked(MouseEvent e) {
+
+		}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			int ii = inBoxY(), jj = inBoxX();
+			if(ii!=-1 && jj!=-1 && endState[0][jj]==0) {
+				endState[ii][jj] = 1;
+				repaint();
+			}
+		}
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		} 
+	}
+	
 	
 	@Override
 	public void run() {
