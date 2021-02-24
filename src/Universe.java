@@ -34,8 +34,8 @@ public class Universe extends JComponent implements Runnable{
 	static double itr = 1;
 	public double mx,my;
 	public int pause = 0;
-	
-	static int con = 100;
+	public boolean start = false, change = false;
+	static int con = 5;
 	
 	public Universe(){
 		Move move = new Move();
@@ -53,7 +53,10 @@ public class Universe extends JComponent implements Runnable{
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setVisible(true);
 		
+		setBoard(con);
 		
+	}
+	public static void setBoard(int con) {
 		
 		for(int i=0;i<h;i++) {
 			for(int j=0;j<w;j++) {
@@ -144,7 +147,7 @@ public class Universe extends JComponent implements Runnable{
 		case 7:{ // (i*j)%2
 			for(int i=0;i<h;i++) {
 				for(int j=0;j<w;j++) {
-					endState[i][j] = (i+j)%2;
+					endState[i][j] = (i*j)%2;
 				}
 			}
 			break;
@@ -161,7 +164,8 @@ public class Universe extends JComponent implements Runnable{
 			}
 		}
 	}
-}
+		
+	}
 	
 	public void paint(Graphics g)
 	{
@@ -231,6 +235,7 @@ public class Universe extends JComponent implements Runnable{
 		}
     	}
 		
+		//System.out.println(mx+" "+my);
 		run();
 		//repaint();
 	}
@@ -239,21 +244,21 @@ public class Universe extends JComponent implements Runnable{
 	public int inBoxX() {
 		for(int i=0;i<h;i++) {
 			for(int j=0;j<w;j++) {
-				if(mx >= spacing+j*size+7 && mx <= (j+1)*size+2)
-					return j;
+				if(mx >= spacing+j*size+7 && mx <= (j+1)*size+2);
+					//return j;
 			}
 		}
-		return -1;
+		return (int) (mx/size);
 	}
 	
 	public int inBoxY() {
 		for(int i=0;i<h;i++) {
 			for(int j=0;j<w;j++) {
-				if(my >= spacing+(i+1)*size+26+5 && my <= 26+5+(i+2)*size-spacing-1)
-					return i;
+				if(my >= spacing+(i+1)*size+26 && my <= 26+(i+2)*size-spacing-1);
+					//return i;
 			}
 		}
-		return -1;
+		return (int) (my/size)-1;
 	}
 	
 	
@@ -266,6 +271,20 @@ public class Universe extends JComponent implements Runnable{
 		public void mouseMoved(MouseEvent e) {
 			mx = e.getX();
 			my = e.getY();
+			if(start) {
+				int ii = inBoxY(), jj = inBoxX();
+				if(ii>=0&&jj>=0&&ii<h&&jj<w)
+					endState[ii][jj] = 1;
+			}
+			//if(change == true) {
+				//change = false;
+				//start = false;
+			//}
+			//else if(change == false) {
+				//change = true;
+				//start = true;
+			//}
+			//repaint();
 		}
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -273,7 +292,12 @@ public class Universe extends JComponent implements Runnable{
 				pause += 1;
 				pause%=2;
 			}
-			
+			//System.out.println(e.getKeyCode());
+			if (e.getKeyCode()<=57&&e.getKeyCode()>=48){
+				setBoard(e.getKeyCode()-48);
+				con = e.getKeyCode()-48;
+				repaint();
+			}
 		}
 		@Override
 		public void keyReleased(KeyEvent e) {
@@ -291,24 +315,32 @@ public class Universe extends JComponent implements Runnable{
 	public class Click implements MouseListener{
 		@Override
 		public void mouseClicked(MouseEvent e) {
-
-		}
-		@Override
-		public void mouseEntered(MouseEvent e) {
-		}
-		@Override
-		public void mouseExited(MouseEvent e) {
-		}
-		@Override
-		public void mousePressed(MouseEvent e) {
-			int ii = inBoxY(), jj = inBoxX();
-			if(ii!=-1 && jj!=-1 && endState[0][jj]==0) {
-				endState[ii][jj] = 1;
-				repaint();
+			//System.out.println("clicked");
+			if(change == true) {
+				change = false;
+				start = false;
+			}
+			else if(change == false) {
+				change = true;
+				start = true;
 			}
 		}
 		@Override
+		public void mouseEntered(MouseEvent e) {
+			//System.out.println("entered");
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+			//System.out.println("exited");
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			//System.out.println("pressed");
+		}
+		@Override
 		public void mouseReleased(MouseEvent e) {
+			//System.out.println("released");
+			
 		} 
 	}
 	
@@ -316,11 +348,10 @@ public class Universe extends JComponent implements Runnable{
 	@Override
 	public void run() {
 		try {
-			Thread.sleep(20);
+			Thread.sleep(1);
 			repaint();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-	
 }
